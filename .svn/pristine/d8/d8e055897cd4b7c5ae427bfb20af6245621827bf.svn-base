@@ -1,0 +1,15 @@
+import java.awt.Point;
+
+public class MonsterOne extends Monster {
+
+	public MonsterOne(GameComponent component) {
+		super(component);
+		this.position = new Point(100, 100);
+	}
+
+	@Override
+	public String getName() {
+		return "monster1";
+	}
+
+}

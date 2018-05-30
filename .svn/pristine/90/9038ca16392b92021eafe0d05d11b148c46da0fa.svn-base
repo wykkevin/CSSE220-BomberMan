@@ -1,0 +1,45 @@
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class MoveListener implements KeyListener {
+
+	private Hero hero;
+
+	public MoveListener(Hero hero) {
+		this.hero = hero;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case 38: // up arrow
+			Point newPoint =new Point(this.hero.getPosition().x,this.hero.getPosition().y-10);
+			this.hero.setPosition(newPoint);
+			System.out.println(this.hero.getPosition());
+			break;
+		case 40: // down arrow
+			break;
+		case 37: // left arrow
+
+			break;
+		case 39: // right arrow
+
+			break;
+
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub.
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub.
+
+	}
+
+}

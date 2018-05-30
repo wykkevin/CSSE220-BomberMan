@@ -1,0 +1,15 @@
+import javax.swing.JComponent;
+
+public class MonsterTwo extends Monster{
+
+	public MonsterTwo(JComponent component) {
+		super(component);
+		// TODO Auto-generated constructor stub.
+	}
+
+	@Override
+	public String getName() {
+		return "2";
+	}
+
+}

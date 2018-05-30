@@ -1,0 +1,28 @@
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+
+public class gameComponent extends JComponent {
+	private JFrame frame;
+
+	public gameComponent(JFrame frame) {
+		this.frame = frame;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		Hero myHero = new Hero(this);
+		MoveListener moveHero = new MoveListener(myHero, this);
+		BombListener setBomb = new BombListener(myHero);
+		myHero.draw(g2);
+		this.frame.addKeyListener(moveHero);
+		this.frame.addKeyListener(setBomb);
+		GameMap gameMap = new GameMap();
+		gameMap.draw(g2, this);
+	}
+
+}

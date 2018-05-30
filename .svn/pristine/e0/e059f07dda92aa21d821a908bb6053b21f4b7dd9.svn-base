@@ -1,0 +1,25 @@
+
+public class Powerup {
+	
+	private Hero hero;
+	
+	public Powerup(Hero hero) {
+		this.hero = hero;
+	}
+	
+	public void speedup() {
+		
+	}
+	
+	public void longerRange() {
+		
+	}
+	
+	public void moreBombs() {
+		this.hero.setRemainBombs(this.hero.getRemainBombs() + 1);
+	}
+	
+	public void extraLife() {
+		this.hero.setLife(this.hero.getLife() + 1);
+	}
+}

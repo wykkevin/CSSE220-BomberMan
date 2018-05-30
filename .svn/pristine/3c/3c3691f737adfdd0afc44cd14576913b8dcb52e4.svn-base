@@ -1,0 +1,157 @@
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.ArrayList;
+
+import javax.swing.JComponent;
+
+/**
+ * Class to draw the components.
+ */
+public class GameComponent extends JComponent {
+	private Hero hero;
+	private ArrayList<Monster> monsterList;
+	private GameMap gameMap;
+	private ArrayList<Bomb> bombList;
+	private Thread repainterThread;
+
+	public GameComponent() {
+		this.hero = new Hero(this);
+		this.monsterList = new ArrayList<Monster>();
+		this.gameMap = new GameMap();
+		this.bombList = new ArrayList<Bomb>();
+		Runnable r = new Repainter(30);
+		this.repainterThread = new Thread(r);
+		this.repainterThread.start();
+
+	}
+
+	public GameMap getMap() {
+		return this.gameMap;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		this.hero.draw(g2);
+
+		for (int i = 0; i < this.monsterList.size(); i++) {
+			this.monsterList.get(i).killHero();
+			this.monsterList.get(i).draw(g2);
+		}
+
+		this.gameMap.draw(g2);
+		for (int i = 0; i < this.bombList.size(); i++) {
+			if (!this.bombList.get(i).hasBombed()) {
+				this.bombList.get(i).draw(g2);
+			} else {
+				this.gameMap.getGameMap()[this.bombList.get(i).getPosition().x
+						/ 50][this.bombList.get(i).getPosition().y / 50] = this.bombList.get(i).getPrevious();
+				this.bombList.remove(this.bombList.get(i));
+				this.hero.setRemainBombs(this.hero.getRemainBombs() + 1);
+			}
+		}
+		if (this.monsterList.size() == 0) {
+			System.out.println("you win");
+			this.mapPlus();
+		}
+	}
+
+	public void addMonster() {
+		MonsterOne m1 = new MonsterOne(this, this.hero);
+		this.monsterList.add(m1);
+		Thread t1 = new Thread(m1);
+		m1.setThread(t1);
+		t1.start();
+		MonsterTwo m2 = new MonsterTwo(this, this.hero);
+		this.monsterList.add(m2);
+		Thread t2 = new Thread(m2);
+		m2.setThread(t2);
+		t2.start();
+	}
+
+	// add hero and monsters to this class. This is called in Main.
+	public void addCharacter(Hero heroCharacter, ArrayList<Monster> monsterCharacter) {
+		this.hero = heroCharacter;
+		this.monsterList = monsterCharacter;
+		this.addMonster();
+		this.repaint();
+	}
+
+	// add bombs, whenever hero drops a bomb, a bomb is added.This is called in
+	// BombListener.
+	public void addBomb() {
+		Bomb bomb = new Bomb(this.gameMap, this.hero, this.monsterList, this.bombList);
+
+		if (this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50] != 3) {
+			this.bombList.add(bomb);
+			Thread bombThread = new Thread(bomb);
+			bomb.setThread(bombThread);
+			bombThread.start();
+			this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50] = 3;
+			this.repaint();
+		}
+	}
+
+	// Click U to increase level, and this is called in MapListener.
+	public void mapPlus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum < 7) {
+			mapNum++;
+			this.gameMap = new GameMap(mapNum);
+		}
+		for (Bomb bomb : this.bombList) {
+			bomb.getThread().interrupt();
+			if (this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50] != 0) {
+				bomb.setPrevious(this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50]);
+			}
+		}
+		this.hero.setPosition(new Point(0, 0));
+		this.monsterList = new ArrayList<Monster>();
+		this.addMonster();
+		this.repaint();
+
+	}
+
+	// Click D to decrease level, and this is called in MapListener.
+	public void mapMinus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum > 1) {
+			mapNum--;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+		for (Bomb bomb : this.bombList) {
+			bomb.getThread().interrupt();
+			if (this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50] != 0) {
+				bomb.setPrevious(this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50]);
+			}
+		}
+		this.monsterList = new ArrayList<>();
+		this.addMonster();
+		this.repaint();
+	}
+
+	// This class is used for painting automatically.
+	private class Repainter implements Runnable {
+		private final int fps;
+
+		public Repainter(int fps) {
+			this.fps = fps;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					Thread.sleep(1000 / this.fps);
+					GameComponent.this.repaint();
+				}
+			} catch (InterruptedException e) {
+				System.out.println("Unexpected InterruptedException");
+				// nothing to do
+			}
+		}
+	}
+}

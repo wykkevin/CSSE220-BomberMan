@@ -1,0 +1,17 @@
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JComponent;
+
+public class gameComponent extends JComponent {
+	public GameMap gameMap = new GameMap();
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		Hero hero = new Hero();
+		hero.draw(g2);
+	}
+
+}

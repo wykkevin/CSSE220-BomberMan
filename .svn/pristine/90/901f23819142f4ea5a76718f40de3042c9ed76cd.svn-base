@@ -1,0 +1,15 @@
+
+public abstract class Powerup {
+	
+	private Hero hero;
+	
+	public Powerup(Hero hero) {
+		this.hero = hero;
+	}
+	
+	public abstract void newPower();
+	
+	public Hero getHero() {
+		return this.hero;
+	}
+}

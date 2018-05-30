@@ -1,0 +1,25 @@
+
+public abstract class Powerup {
+	
+	private Hero hero;
+	private Bomb bomb;
+	
+	public Powerup(Hero hero) {
+		this.hero = hero;
+	}
+	
+	public Powerup(Hero hero, Bomb bomb) {
+		this.hero = hero;
+		this.bomb = bomb;
+	}
+	
+	public abstract void newPower();
+	
+	public Hero getHero() {
+		return this.hero;
+	}
+	
+	public Bomb getBomb() {
+		return this.bomb;
+	}
+}

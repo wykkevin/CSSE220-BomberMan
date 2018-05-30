@@ -1,0 +1,29 @@
+/**
+ * Class for the hero
+ */
+public class Hero extends Creature {
+
+	public Hero(GameComponent component) {
+		super(component);
+		this.speed = 25;
+	}
+
+	public boolean dropBomb() {
+		if (this.remainBombs > 0) {
+			this.remainBombs--;
+			return true;
+		}
+		return false;
+	}
+
+	public void reset() {
+		this.remainBombs = 5;
+		this.life = 3;
+		this.component.setRange(2);
+	}
+
+	@Override
+	public String getName() {
+		return "hero";
+	}
+}

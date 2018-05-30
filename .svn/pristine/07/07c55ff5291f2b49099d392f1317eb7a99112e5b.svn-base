@@ -1,0 +1,26 @@
+import java.awt.Color;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+public class GamePanel extends JPanel {
+	private GameComponent component;
+
+	public GamePanel(GameComponent myGame) {
+		super();
+		this.component = myGame;
+		// this.setSize(500, 700);
+		this.setBackground(Color.blue);
+
+		addButtons();
+	}
+
+	public void addButtons() {
+		JButton pauseButton = new JButton("pause");
+		pauseButton.setLocation(0, 10);
+		pauseButton.addActionListener(new GameListener(this.component));
+		this.add(pauseButton);
+		JButton restartButton = new JButton("restart");
+		this.add(restartButton);
+	}
+}

@@ -1,0 +1,23 @@
+import java.awt.Point;
+
+/**
+ * This is a kind of power up that will increase the remain bombs of hero by 1.
+ */
+
+public class MoreBombs extends Powerup {
+
+	public MoreBombs(Point position, GameComponent gameComponent) {
+		super(position, gameComponent);
+		// TODO Auto-generated constructor stub.
+	}
+
+	@Override
+	public void newPower(Hero hero) {
+		hero.setRemainBombs(hero.getRemainBombs() + 1);
+	}
+
+	@Override
+	public String getName() {
+		return ("More Bombs");
+	}
+}

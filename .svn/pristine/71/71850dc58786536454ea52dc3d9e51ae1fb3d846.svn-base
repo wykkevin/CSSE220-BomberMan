@@ -1,0 +1,51 @@
+import java.awt.Point;
+import java.util.ArrayList;
+
+/**
+ * Class for monster
+ */
+public abstract class Monster extends character {
+
+	public Monster(GameComponent component) {
+		super(component);
+		setInitialPoint();
+		this.speed = 25;
+	}
+
+	@Override
+	public abstract String getName();
+
+	public void setInitialPoint() {
+		int x = (int) (Math.random() * 7 + 6);
+		int y = (int) (Math.random() * 7 + 6);
+		if (this.component.getMap().isWall(x, y) == false) {
+			this.position = new Point(x * 50, y * 50);
+			return;
+		}
+		setInitialPoint();
+	}
+
+	public void addToList(ArrayList<Monster> monsterList) {
+		monsterList.add(this);
+	}
+
+	public void move() {
+		double random0To4 = (int) (Math.random() * 4);
+		if (random0To4 == 0 && this.movable("up") && this.getPosition().y > 0) {// up
+			Point newPosition = new Point(this.position.x, this.position.y - this.speed);
+			this.setPosition(newPosition);
+		}
+		if (random0To4 == 1 && this.movable("down") && this.getPosition().y < 650) {// down
+			Point newPosition = new Point(this.position.x, this.position.y + this.speed);
+			this.setPosition(newPosition);
+		}
+		if (random0To4 == 2 && this.movable("left") && this.getPosition().x > 0) {// left
+			Point newPosition = new Point(this.position.x - this.speed, this.position.y);
+			this.setPosition(newPosition);
+		}
+		if (random0To4 == 3 && this.movable("right") && this.getPosition().x < 650) {// right
+			Point newPosition = new Point(this.position.x + this.speed, this.position.y);
+			this.setPosition(newPosition);
+		}
+	}
+}

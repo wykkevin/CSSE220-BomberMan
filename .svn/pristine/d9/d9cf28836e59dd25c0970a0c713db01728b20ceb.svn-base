@@ -1,0 +1,42 @@
+
+import java.awt.BorderLayout;
+import java.awt.event.KeyListener;
+
+import javax.swing.JFrame;
+
+/**
+ * The main class for your arcade game.
+ * 
+ * You can design your game any way you like, but make the game start by running
+ * main here.
+ * 
+ * Also don't forget to write javadocs for your classes and functions!
+ * 
+ * @author Buffalo
+ *
+ */
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		JFrame frame = new JFrame();
+
+		gameComponent myGame = new gameComponent();
+		Hero myHero = new Hero(myGame);
+		myGame.addHero(myHero);
+		KeyListener moveHero = new MoveListener(myHero, myGame);
+		KeyListener setBomb = new BombListener(myHero, myGame);
+		KeyListener mapChange = new MapListener(myGame);
+		frame.addKeyListener(moveHero);
+		frame.addKeyListener(setBomb);
+		frame.addKeyListener(mapChange);
+		frame.add(myGame, BorderLayout.CENTER);
+		frame.setSize(719, 746);
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+
+}

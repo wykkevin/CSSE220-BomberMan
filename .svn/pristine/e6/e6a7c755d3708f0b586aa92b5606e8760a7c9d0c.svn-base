@@ -1,0 +1,9 @@
+
+import java.awt.Graphics2D;
+
+public class GameMap {
+	public void draw(Graphics2D g2) {
+//		Hero hero = new Hero();
+//		g2.draw(hero.draw());
+	}
+}

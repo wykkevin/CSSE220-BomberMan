@@ -1,0 +1,22 @@
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JComponent;
+
+public class InfoComponent extends JComponent {
+	private GameComponent game;
+
+	public InfoComponent(GameComponent game) {
+		this.game = game;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.drawString("Life: " + this.game.getHero().getLife(), 10, 30);
+		g2.drawString("Remain Bombs: " + this.game.getHero().getRemainBombs(), 80, 30);
+		g2.drawString("Bomb range: " + this.game.getBomb().getRange(), 220, 30);
+		g2.drawString("Monsters: " + this.game.getMonsterList().size(), 10, 60);
+		g2.drawString("Level: " + this.game.getGameMap().getMapNum(), 500, 60);
+	}
+}

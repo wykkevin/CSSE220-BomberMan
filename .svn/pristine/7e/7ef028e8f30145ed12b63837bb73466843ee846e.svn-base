@@ -1,0 +1,59 @@
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Graphics2D;
+import java.util.ArrayList;
+
+import org.junit.Test;
+
+public class BombTest {
+	Graphics2D g2;
+	private ArrayList<Bomb> bombList = new ArrayList<Bomb>();
+	private ArrayList<Monster> monsterList = new ArrayList<Monster>();
+	private GameMap map = new GameMap();
+	private GameComponent component = new GameComponent();
+	private Hero hero=new Hero(component);
+	// private int range;
+
+	@Test
+	public void Addtest() {
+		Bomb bomb1 = null;
+		Bomb bomb2 = null;
+		Bomb bomb3 = null;
+		Bomb bomb4 = null;
+		Bomb bomb5 = null;
+		this.bombList.add(bomb1);
+		this.bombList.add(bomb2);
+		this.bombList.add(bomb3);
+		this.bombList.add(bomb4);
+		this.bombList.add(bomb5);
+		assertEquals(bomb1, this.bombList.get(0));
+		assertEquals(bomb2, this.bombList.get(1));
+		assertEquals(bomb3, this.bombList.get(2));
+		assertEquals(bomb4, this.bombList.get(3));
+		assertEquals(bomb5, this.bombList.get(4));
+
+	}
+
+	@Test
+	public void SetRangeTest(){
+		Bomb bomb1=new Bomb(map,hero,monsterList,bombList);
+		this.bombList.add(bomb1);
+		this.bombList.get(0).setRange(1);
+		assertEquals(1,this.bombList.get(0).getRange());
+		Bomb bomb2=new Bomb(map,hero,monsterList,bombList);
+		this.bombList.add(bomb2);
+		this.bombList.get(1).setRange(2);
+		assertEquals(2,this.bombList.get(1).getRange());
+		Bomb bomb3=new Bomb(map,hero,monsterList,bombList);
+		this.bombList.add(bomb3);
+		this.bombList.get(2).setRange(3);
+		assertEquals(3,this.bombList.get(2).getRange());
+		Bomb bomb4=new Bomb(map,hero,monsterList,bombList);
+		this.bombList.add(bomb4);
+		this.bombList.get(3).setRange(2);
+		assertEquals(2,this.bombList.get(3).getRange());
+
+	
+	}
+
+}

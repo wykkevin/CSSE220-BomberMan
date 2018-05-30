@@ -1,0 +1,13 @@
+public class MonsterTwo extends Monster {
+
+	public MonsterTwo(GameComponent component) {
+		super(component);
+		// TODO Auto-generated constructor stub.
+	}
+
+	@Override
+	public String getName() {
+		return "monster2";
+	}
+
+}

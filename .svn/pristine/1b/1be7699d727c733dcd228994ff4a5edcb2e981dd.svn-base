@@ -1,0 +1,6 @@
+Based on the UML digram we draw, we make class of Monster, Hero, GameComponent, and bomb.
+We pick pictures for our hero, monsters, bomb, and different types of walls.
+We design several maps, which we can use "u" and "d" to switching between maps.
+We add method called "moveable" to make sure hero and monster cannot across the wall.
+The hero we make can actually put bombs down, but because we are on the half way of making bomb, the bomb cannot explode .
+Also, we make monsters that cannot move at this time.

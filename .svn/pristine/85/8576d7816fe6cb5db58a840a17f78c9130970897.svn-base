@@ -1,0 +1,16 @@
+import java.awt.Point;
+
+public class Bomb {
+
+	private Point position;
+	private int pauseTime;
+	
+	public Bomb(Point newPoint){
+		this.position=newPoint;
+	}
+	
+	public void explode(){
+		System.out.println("I am still learning to explode.");
+	}
+	
+}

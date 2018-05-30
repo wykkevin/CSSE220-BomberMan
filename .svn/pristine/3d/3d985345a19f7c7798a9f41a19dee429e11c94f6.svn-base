@@ -1,0 +1,34 @@
+
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.JComponent;
+
+public class GameMap {
+
+	public void draw(Graphics2D g2, JComponent component) {
+		Scanner inscanner = null;
+		ArrayList<String> map = new ArrayList();
+		try {
+			inscanner = new Scanner(new File("src/image/Map1"));
+			while (inscanner.hasNextLine()) {
+				map.add(inscanner.nextLine());
+			}
+		} catch (FileNotFoundException exception) {
+			System.out.println("file");
+		}
+		for (int i = 0; i < map.size(); i++) {
+			for (int j = 0; j < map.get(0).length(); j++) {
+				int num = Character.getNumericValue(map.get(i).charAt(j));
+				Wall wall = new Wall(new Point(j * 50, i * 50), true, num);
+				
+				wall.draw(g2);
+			}
+		}
+		inscanner.close();
+	}
+}

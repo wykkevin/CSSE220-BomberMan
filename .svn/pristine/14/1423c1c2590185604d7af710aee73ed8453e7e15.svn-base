@@ -1,0 +1,8 @@
+We focus on bomb this time.
+The first step is to make the bomb explode successfully. So we add explodehelpler 
+and explode to make it explode.
+Also, the bomb can kill the wall and monster.
+When the bomb kill the hero, the hero will back to position(0,0), because we do not have
+"life" of the hero.
+At last, we make two different monsters that can randomly appear at the map, and they can
+move ramdomly.

@@ -1,0 +1,54 @@
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+
+public class gameComponent extends JComponent {
+	private JFrame frame;
+	private Hero hero;
+	private GameMap gameMap;
+
+	public gameComponent(JFrame frame) {
+		this.frame = frame;
+		this.hero = new Hero(this);
+		this.gameMap = new GameMap();
+	}
+
+	public GameMap getMap() {
+		return this.gameMap;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		this.hero.draw(g2);
+
+		this.gameMap.draw(g2, this);
+	}
+
+	public void addHero(Hero hero) {
+		this.hero = hero;
+		this.repaint();
+	}
+
+	public void mapPlus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum < 3) {
+			mapNum++;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+	}
+
+	public void mapMinus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum > 1) {
+			mapNum--;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+	}
+}

@@ -1,0 +1,13 @@
+
+public class ExtraLife extends Powerup {
+
+	public ExtraLife(Hero hero) {
+		super(hero);
+	}
+
+	@Override
+	public void newPower() {
+		this.getHero().setLife(this.getHero().getLife() + 1);
+	}
+
+}

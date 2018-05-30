@@ -1,0 +1,237 @@
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
+/**
+ * Class for bomb.
+ */
+public class Bomb implements Runnable {
+
+	private Point position = new Point(0, 0);
+	private ArrayList<Bomb> bombList = new ArrayList<Bomb>();
+	private ArrayList<Monster> monsterList = new ArrayList<Monster>();
+	private int range;
+	private GameMap map;
+	private Hero hero;
+	private boolean hasBombed;
+	private Thread bombThread;
+	private int previous;
+	private boolean heroIsBombed;
+	private GameComponent component;
+
+	public Bomb(GameMap map, Hero hero, ArrayList<Monster> monsterList, ArrayList<Bomb> bombList,
+			GameComponent component, int range) {
+		this.hero = hero;
+		this.position = new Point((this.hero.getPosition().x + 25) / 50 * 50,
+				(this.hero.getPosition().y + 25) / 50 * 50);
+		this.map = map;
+		this.bombList = bombList;
+		this.monsterList = monsterList;
+		this.bombThread = null;
+		this.previous = 0;
+		this.hasBombed = false;
+		this.component = component;
+		this.range = range;
+	}
+
+	public boolean hasBombed() {
+		return this.hasBombed;
+	}
+
+	public void setHasBombed() {
+		this.hasBombed = true;
+	}
+
+	public int getPrevious() {
+		return this.previous;
+	}
+
+	public void setPrevious(int previous) {
+		this.previous = previous;
+	}
+
+	public void setThread(Thread thread) {
+		this.bombThread = thread;
+	}
+
+	public Thread getThread() {
+		return this.bombThread;
+	}
+
+	public void explode() {
+		explodeHelper(1, 0);
+		explodeHelper(-1, 0);
+		explodeHelper(0, 1);
+		explodeHelper(0, -1);
+		// Prevent the hero be killed several times by one bomb
+		if (this.heroIsBombed) {
+			this.hero.setLife(this.hero.getLife() - 1);
+			this.hero.setPosition(new Point(0, 0));
+			this.heroIsBombed = false;
+		}
+		this.hasBombed = true;
+
+	}
+
+	public void explodeHelper(int x, int y) {
+		int[][] currentMap = this.map.getGameMap();
+		for (int i = 0; i < 50 * this.range + 1; i++) {
+			if ((((this.getPosition().x + x * i) / 50) < 14) && (((this.getPosition().x + x * i) / 50) >= 0)
+					&& (((this.getPosition().y + y * i) / 50) < 14) && (((this.getPosition().y + y * i) / 50) >= 0)) {
+				if (currentMap[(this.getPosition().x + x * i) / 50][(this.getPosition().y + y * i) / 50] == 2) {
+					return;
+				}
+
+				// wall
+				if (currentMap[(this.getPosition().x + x * i) / 50][(this.getPosition().y + y * i) / 50] == 1) {
+					currentMap[(this.getPosition().x + x * i) / 50][(this.getPosition().y + y * i) / 50] = 0;
+					// Powerups
+					Point breakPoint = new Point((this.getPosition().x + x * i) / 50 * 50,
+							(thsis.getPosition().y + y * i) / 50 * 50);
+					double randNum = Math.random();
+					if (randNum >= .9) {
+						currentMap[(this.getPosition().x + x * i) / 50][(this.getPosition().y + y * i) / 50] = 4;
+						Powerup extraLife = new ExtraLife(breakPoint, this.component);
+						this.component.addPowerUp(extraLife);
+					} else if (randNum >= .8) {
+						currentMap[(this.getPosition().x + x * i) / 50][(this.getPosition().y + y * i) / 50] = 5;
+						Powerup moreBomb = new MoreBombs(breakPoint, this.component);
+						this.component.addPowerUp(moreBomb);
+					} else if (randNum >= .7) {
+						currentMap[(this.getPosition().x + x * i) / 50][(this.getPosition().y + y * i) / 50] = 6;
+						Powerup longerRange = new LongerRange(breakPoint, this.component);
+						this.component.addPowerUp(longerRange);
+					}
+					return;
+				}
+
+				// bomb
+				for (int j = 0; j < this.bombList.size(); j++) {
+					if (j > this.bombList.indexOf(this)) {
+						if (this.position.x + x * i == this.bombList.get(j).getPosition().x
+								&& this.position.y + y * i == this.bombList.get(j).getPosition().y) {
+							this.bombList.get(j).explode();
+							this.bombList.get(j).setHasBombed();
+							return;
+						}
+					}
+				}
+
+				// hero
+				if (this.position.x + x * i == this.hero.getPosition().x) {
+					for (int j = -25; j < 26; j++) {
+						if (this.position.y + j == this.hero.getPosition().y) {
+							this.heroIsBombed = true;
+							return;
+						}
+					}
+				}
+				if (this.position.y + y * i == this.hero.getPosition().y) {
+					for (int j = -25; j < 26; j++) {
+						if (this.position.x + j == this.hero.getPosition().x) {
+							this.heroIsBombed = true;
+							return;
+						}
+					}
+				}
+
+				// monster
+				if (this.monsterList.size() != 0) {
+					for (int j = 0; j < this.monsterList.size(); j++) {
+						if (this.position.x + x * i == this.monsterList.get(j).getPosition().x) {
+							for (int k = -25; k < 26; k++) {
+								if (this.position.y + k == this.monsterList.get(j).getPosition().y) {
+									this.monsterList.get(j).getThread().interrupt();
+									this.monsterList.remove(this.monsterList.get(j));
+									return;
+								}
+							}
+						}
+						if (this.position.y + y * i == this.monsterList.get(j).getPosition().y) {
+							for (int k = -25; k < 26; k++) {
+								if (this.position.x + k == this.monsterList.get(j).getPosition().x) {
+									this.monsterList.get(j).getThread().interrupt();
+									this.monsterList.remove(this.monsterList.get(j));
+									return;
+								}
+							}
+						}
+					}
+				}
+				if (this.map.getGameMap()[(this.position.x + i * x) / 50][(this.position.y + i * y) / 50] == 0) {
+					if ((this.position.y + i * y) / 50 >= 0 && (this.position.y + i * y) / 50 < 14) {
+						this.map.getGameMap()[this.position.x / 50][(this.position.y + i * y) / 50] = 8;
+					}
+					if ((this.position.x + i * x) / 50 >= 0 && (this.position.x + i * x) / 50 < 14) {
+						this.map.getGameMap()[(this.position.x + i * x) / 50][this.position.y / 50] = 9;
+					}
+				}
+			}
+		}
+	}
+
+	public int getRange() {
+		return this.range;
+	}
+
+	public void setRange(int range) {
+		this.range = range;
+	}
+
+	public Point getPosition() {
+		return this.position;
+	}
+
+	public void setPosition(Point position) {
+		this.position = position;
+	}
+
+	public void draw(Graphics2D g2) {
+		BufferedImage bomb;
+		try {
+			bomb = ImageIO.read(new File("src/image/bomb.png"));
+			g2.drawImage(bomb, (this.position.x + 25) / 50 * 50, (this.position.y + 25) / 50 * 50, 50, 50, null);
+		} catch (IOException exception) {
+			System.out.println("Unexpected IOException");
+		}
+	}
+
+	@SuppressWarnings("static-access")
+	@Override
+	public void run() {
+		int count = 200;
+		while (count >= 0) {
+			try {
+				if (this.component.getPaused() == true) {
+					while (this.component.getPaused() == true) {
+						System.out.print("");
+					}
+				}
+				Thread.sleep(10);
+				count--;
+			} catch (InterruptedException exception) {
+				System.out.print("");
+			}
+		}
+		if (!this.hasBombed) {
+			this.explode();
+		}
+		try {
+			this.bombThread.sleep(100);
+		} catch (InterruptedException exception) {
+			System.out.print("");
+		}
+		for (int i = 0; i < this.map.getGameMap().length; i++) {
+			for (int j = 0; j < this.map.getGameMap()[0].length; j++) {
+				if (this.map.getGameMap()[i][j] == 9 || this.map.getGameMap()[i][j] == 8) {
+					this.map.getGameMap()[i][j] = 0;
+				}
+			}
+		}
+	}
+}

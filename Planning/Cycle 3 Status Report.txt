@@ -1,0 +1,9 @@
+First, we make the monster can kill the hero when they meet.
+Then we design the Power-ups, which is that when the hero destroy a wall, the Power-ups will
+be in that position.
+There are three kinds of Power-ups, the first one is "bubble", which can increase the bomb
+that the hero makes at the same time.
+The second one is called "Power", which can strengthen the area the bomb can destroy.
+The last on is "Bonus Life", which can increase one life to our hero.
+Also, we use three pictures of each Power-up.
+Then we design that when we kill all the monsters on the map, it will automatically change to the next map.

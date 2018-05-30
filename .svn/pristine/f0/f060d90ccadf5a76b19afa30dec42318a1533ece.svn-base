@@ -1,0 +1,40 @@
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+public class Bomb {
+
+	private Point position;
+	private int pauseTime;
+	
+	public Bomb(Point newPoint){
+		this.setPosition(newPoint);
+	}
+	
+	public void explode(){
+		System.out.println("I am still learning to explode.");
+	}
+
+	public Point getPosition() {
+		return position;
+	}
+
+	public void setPosition(Point position) {
+		this.position = position;
+	}
+	
+	public void draw(Graphics2D g2) {
+		BufferedImage bomb;
+		try {
+			bomb = ImageIO.read(new File("src/image/bomb.png"));
+			g2.drawImage(bomb, this.position.x, this.position.y, 50, 50, null);
+		} catch (IOException exception) {
+			System.out.println("Unexpected IOException");
+		}
+	}
+	
+}

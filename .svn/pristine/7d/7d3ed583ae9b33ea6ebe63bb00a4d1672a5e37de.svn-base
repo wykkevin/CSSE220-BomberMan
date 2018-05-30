@@ -1,0 +1,32 @@
+import java.awt.Point;
+import java.util.ArrayList;
+
+/**
+ * Class for monster
+ */
+public abstract class Monster extends Creature implements Runnable {
+
+	public Monster(GameComponent component) {
+		super(component);
+		setInitialPoint();
+		this.speed = 25;
+	}
+
+	@Override
+	public abstract String getName();
+
+	public void setInitialPoint() {
+		int x = (int) (Math.random() * 7 + 6);
+		int y = (int) (Math.random() * 7 + 6);
+		if (this.component.getMap().isWall(x, y) == false) {
+			this.position = new Point(x * 50, y * 50);
+			return;
+		}
+		setInitialPoint();
+	}
+
+	public void addToList(ArrayList<Monster> monsterList) {
+		monsterList.add(this);
+	}
+
+}

@@ -1,0 +1,375 @@
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+/**
+ * Class to draw the components.
+ */
+public class GameComponent extends JComponent {
+	private GameMap gameMap;
+	private Hero hero;
+	private ArrayList<Monster> monsterList;
+	private ArrayList<Bomb> bombList;
+	private ArrayList<Powerup> powerupList;
+	private Bomb bomb;
+	private int range;
+	private boolean isPaused;
+	private Thread repainterThread;
+	private Frames mainFrame;
+	private ArrayList<String> elements = new ArrayList<>();
+
+	public GameComponent(Frames frames) {
+		this.mainFrame = frames;
+		if (!frames.isIfContinue()) {
+			this.gameMap = new GameMap();
+			this.hero = new Hero(this);
+			this.monsterList = new ArrayList<Monster>();
+			this.bombList = new ArrayList<Bomb>();
+			this.powerupList = new ArrayList<Powerup>();
+			this.bomb = new Bomb(this.gameMap, this.hero, this.monsterList, this.bombList, this, this.range);
+			this.range = 1;
+			this.isPaused = false;
+		} else {
+			System.out.println("loading..");
+			this.load();
+		}
+		Runnable r = new Repainter(30);
+		this.repainterThread = new Thread(r);
+		this.repainterThread.start();
+	}
+
+	public GameComponent() {
+		this.gameMap = new GameMap();
+		this.hero = new Hero(this);
+		this.monsterList = new ArrayList<Monster>();
+		this.bombList = new ArrayList<Bomb>();
+		this.powerupList = new ArrayList<Powerup>();
+		this.bomb = new Bomb(this.gameMap, this.hero, this.monsterList, this.bombList, this, this.range);
+		this.range = 1;
+		this.isPaused = false;
+		Runnable r = new Repainter(30);
+		this.repainterThread = new Thread(r);
+		this.repainterThread.start();
+	}
+
+	public void load() {
+		this.elements = readfile();
+		this.gameMap = new GameMap();
+		for (int i = 0; i < 14; i++) {
+			for (int j = 0; j < 14; j++) {
+				this.gameMap.getGameMap()[j][i] = Character.getNumericValue(elements.get(i).charAt(j));
+			}
+		}
+		this.hero = new Hero(this);
+		this.hero.setLife(4);
+		this.monsterList = new ArrayList<Monster>();
+		this.bombList = new ArrayList<Bomb>();
+		this.powerupList = new ArrayList<Powerup>();
+		this.bomb = new Bomb(this.gameMap, this.hero, this.monsterList, this.bombList, this, this.range);
+		this.range = 1;
+		this.isPaused = false;
+	}
+
+	public ArrayList<String> readfile() {
+		ArrayList<String> elements = new ArrayList<>();
+		try {
+			Scanner inscanner = new Scanner(new File("src/image/continue"));
+			while (inscanner.hasNextLine()) {
+				elements.add(inscanner.nextLine());
+			}
+			inscanner.close();
+		} catch (FileNotFoundException exception) {
+			exception.printStackTrace();
+		}
+
+		return elements;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		// die
+		if (this.hero.getLife() == 0) {
+			this.gameOver();
+		}
+		// information
+		g.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+		g.setColor(Color.red);
+		g2.drawString("Level: " + this.getGameMap().getMapNum(), 10, 720);
+		g2.drawString("Life: " + this.getHero().getLife(), 90, 720);
+		g2.drawString("Remain Bombs: " + this.getHero().getRemainBombs(), 150, 720);
+		g2.drawString("Bomb range: " + this.getRange(), 300, 720);
+		g2.drawString("Monsters: " + this.getMonsterList().size(), 420, 720);
+		g2.drawString("Bomb upgraded: " + this.hero.getBombUpgrade(), 525, 720);
+		// hero
+		this.hero.draw(g2);
+		// powerup
+		this.obtainPowers();
+		// monster
+		for (int i = 0; i < this.monsterList.size(); i++) {
+			this.monsterList.get(i).killHero();
+			this.monsterList.get(i).draw(g2);
+		}
+		// map
+		this.gameMap.draw(g2);
+		// bomb
+		for (int i = 0; i < this.bombList.size(); i++) {
+			if (!this.bombList.get(i).hasBombed()) {
+				this.bombList.get(i).draw(g2);
+			} else {
+				this.gameMap.getGameMap()[this.bombList.get(i).getPosition().x
+						/ 50][this.bombList.get(i).getPosition().y / 50] = this.bombList.get(i).getPrevious();
+				this.bombList.remove(this.bombList.get(i));
+				this.hero.setRemainBombs(this.hero.getRemainBombs() + 1);
+			}
+		}
+		// win
+		if (this.monsterList.size() == 0) {
+			System.out.println("You win!");
+			this.mapChange("up");
+			if (this.getGameMap().getMapNum() == 7) {
+				this.isPaused=true;
+				System.out.println("Game is paused.");
+				JFrame finalFrame = new JFrame();
+				JLabel finalLabel = new JLabel(
+						"Congratulation! You have passed the normal levels! Hope you have enough powerups. Because this is the final free battlefield.");
+				finalFrame.add(finalLabel);
+				finalFrame.pack();
+				finalFrame.setVisible(true);
+			}
+		}
+	}
+
+	public boolean getPaused() {
+		return this.isPaused;
+	}
+
+	public void setPaused(boolean isPaused) {
+		this.isPaused = isPaused;
+	}
+
+	public GameMap getMap() {
+		return this.gameMap;
+	}
+
+	public Hero getHero() {
+		return this.hero;
+	}
+
+	public ArrayList<Bomb> getBombList() {
+		return this.bombList;
+	}
+
+	public ArrayList<Monster> getMonsterList() {
+		return this.monsterList;
+	}
+
+	public void setMonsterList(ArrayList<Monster> list) {
+		this.monsterList = list;
+	}
+
+	public GameMap getGameMap() {
+		return this.gameMap;
+	}
+
+	public Bomb getBomb() {
+		return this.bomb;
+	}
+
+	public int getRange() {
+		return this.range;
+	}
+
+	public void setRange(int range) {
+		this.range = range;
+		this.bomb.setRange(this.range);
+	}
+
+	public void gameOver() {
+		for (int i = 0; i < 7; i++) {
+			this.mapChange("down");
+		}
+		this.hero.reset();
+		this.repaint();
+	}
+
+	public void addPowerUp(Powerup powerup) {
+		this.powerupList.add(powerup);
+	}
+
+	public void addMonster() {
+		Random random = new Random();
+		int monsterNum = random.nextInt(4) + 2;
+
+		for (int i = 0; i < monsterNum; i++) {
+			int monsterType = random.nextInt(2);
+			if (monsterType == 0) {
+				Monster m = new MonsterOne(this, this.hero);
+				this.monsterList.add(m);
+				Thread t = new Thread(m);
+				m.setThread(t);
+				t.start();
+			}
+			if (monsterType == 1) {
+				Monster m = new MonsterTwo(this, this.hero);
+				this.monsterList.add(m);
+				Thread t = new Thread(m);
+				m.setThread(t);
+				t.start();
+			}
+		}
+		Monster m = new MonsterThree(this, this.hero);
+		this.monsterList.add(m);
+		Thread t = new Thread(m);
+		m.setThread(t);
+		t.start();
+	}
+
+	public void addMonsterContinue() {
+		String[] monsters = this.elements.get(15).split(",");
+		String[] positions = this.elements.get(16).split(",");
+		for (int i = 0; i < monsters.length; i++) {
+			Monster m = null;
+			if (monsters[i].equals("monster1")) {
+				m = new MonsterOne(this, this.hero);
+			}
+			if (monsters[i].equals("monster2")) {
+				m = new MonsterTwo(this, this.hero);
+			}
+			if (monsters[i].equals("monster3")) {
+				m = new MonsterThree(this, this.hero);
+				m.setLife(Integer.valueOf(monsters[i + 1]));
+			}
+			m.setPosition(new Point(Integer.valueOf(positions[2 * i]), Integer.valueOf(positions[2 * i + 1])));
+			this.monsterList.add(m);
+			Thread t = new Thread(m);
+			m.setThread(t);
+			t.start();
+			if (monsters[i].equals("monster3")) {
+				i++;
+			}
+		}
+	}
+
+	// add hero and monsters to this class. This is called in Main.
+	public void addCharacter(Hero heroCharacter, ArrayList<Monster> monsterCharacter) {
+		this.hero = heroCharacter;
+
+		this.monsterList = monsterCharacter;
+		if (this.mainFrame.isIfContinue()) {
+			String[] heroState = this.elements.get(14).split(",");
+			int[] heroStateInt = new int[heroState.length];
+			for (int i = 0; i < heroState.length; i++) {
+				heroStateInt[i] = Integer.valueOf(heroState[i]);
+			}
+			this.hero.life = heroStateInt[0];
+			this.hero.setPosition(new Point(heroStateInt[1], heroStateInt[2]));
+			this.hero.remainBombs = heroStateInt[3];
+			this.range = heroStateInt[4];
+			this.hero.setBombUpgrade(Boolean.valueOf(this.elements.get(17)));
+			this.isPaused = true;
+			addMonsterContinue();
+
+			this.gameMap.setMapNum(Integer.valueOf(this.elements.get(18)));
+			System.out.println("load finish");
+			System.out.println("Now game is paused, press p or Button 'pause' to continue");
+		} else {
+			this.addMonster();
+		}
+		this.repaint();
+	}
+
+	// add bombs, whenever hero drops a bomb, a bomb is added.This is called in
+	// BombListener.
+	public void addBomb() {
+		Bomb bomb = new Bomb(this.gameMap, this.hero, this.monsterList, this.bombList, this, this.range);
+		if (this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50] != 3) {
+			for (int i = 0; i < this.powerupList.size(); i++) {
+				if (this.powerupList.get(i).getPosition().equals(bomb.getPosition())) {
+					this.powerupList.remove(this.powerupList.get(i));
+				}
+			}
+			this.bombList.add(bomb);
+			Thread bombThread = new Thread(bomb);
+			bomb.setThread(bombThread);
+			bombThread.start();
+			this.gameMap.getGameMap()[bomb.getPosition().x / 50][bomb.getPosition().y / 50] = 3;
+			this.repaint();
+		}
+	}
+
+	// Click U to increase level, and this is called in MapListener. Click D to
+	// decrease level, and this is called in MapListener.
+	public void mapChange(String change) {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum < 7 && change.equals("up")) {
+			mapNum++;
+		}
+		if (mapNum > 1 && change.equals("down")) {
+			mapNum--;
+		}
+		this.gameMap = new GameMap(mapNum);
+		int bombNum = this.bombList.size();
+		for (int i = this.bombList.size() - 1; i >= 0; i--) {
+			this.bombList.get(i).setHasBombed();
+			this.bombList.get(i).getThread().interrupt();
+			this.bombList.remove(this.bombList.get(i));
+		}
+		this.hero.setPosition(new Point(0, 0));
+		this.monsterList = new ArrayList<Monster>();
+		this.powerupList = new ArrayList<Powerup>();
+		this.addMonster();
+		this.isPaused = false;
+		this.hero.setRemainBombs(this.hero.getRemainBombs() + bombNum);
+		this.repaint();
+
+	}
+
+	// hero get powerup
+	public void obtainPowers() {
+		for (int i = 0; i < this.powerupList.size(); i++) {
+			if (Math.abs(this.powerupList.get(i).getPosition().x - this.hero.getPosition().x) <= 25
+					&& Math.abs(this.powerupList.get(i).getPosition().y - this.hero.getPosition().y) <= 25) {
+				this.powerupList.get(i).newPower(this.hero);
+				System.out.println("You got the " + this.powerupList.get(i).getName() + " powerup.");
+				this.getMap().getGameMap()[this.powerupList.get(i).getPosition().x
+						/ 50][this.powerupList.get(i).getPosition().y / 50] = 0;
+				this.powerupList.remove(this.powerupList.get(i));
+			}
+		}
+	}
+
+	// This class is used for painting automatically.
+	private class Repainter implements Runnable {
+		private final int fps;
+
+		public Repainter(int fps) {
+			this.fps = fps;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					Thread.sleep(1000 / this.fps);
+					GameComponent.this.repaint();
+				}
+			} catch (InterruptedException e) {
+				System.out.println("Unexpected InterruptedException");
+				// nothing to do
+			}
+		}
+	}
+}

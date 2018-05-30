@@ -1,0 +1,12 @@
+public class MonsterOne extends Monster {
+
+	public MonsterOne(GameComponent component) {
+		super(component);
+	}
+
+	@Override
+	public String getName() {
+		return "monster1";
+	}
+
+}

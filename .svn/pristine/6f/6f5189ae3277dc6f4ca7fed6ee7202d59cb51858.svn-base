@@ -1,0 +1,11 @@
+import java.awt.Point;
+
+public class Bomb {
+
+	private Point position;
+	
+	public Bomb(Point newPoint){
+		this.position=newPoint;
+	}
+	
+}

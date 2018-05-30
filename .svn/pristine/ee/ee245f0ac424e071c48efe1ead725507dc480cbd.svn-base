@@ -1,0 +1,19 @@
+import java.awt.Point;
+
+public class ExtraLife extends Powerup {
+
+	public ExtraLife(Point position) {
+		super(position);
+	}
+
+	@Override
+	public void newPower(Hero hero) {
+		hero.setLife(hero.getLife() + 1);
+	}
+	
+	@Override
+	public String getName() {
+		return ("Extra Life");
+	}
+
+}

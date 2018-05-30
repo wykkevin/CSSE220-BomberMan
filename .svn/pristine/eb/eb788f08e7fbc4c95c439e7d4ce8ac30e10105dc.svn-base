@@ -1,0 +1,27 @@
+import java.awt.Point;
+
+public class Hero {
+	
+	private Point position;
+	private int remainBombs;
+	
+	public Hero(){
+		this.getPosition().x=0;
+		this.getPosition().y=0;
+		this.remainBombs=1;
+	}
+	
+	public Point getPosition() {
+		return position;
+	}
+
+	public void setPosition(Point position) {
+		this.position = position;
+	}
+
+	public void move(){
+		MoveListener moveHero=new MoveListener(this);
+		
+	}
+	
+}

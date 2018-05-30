@@ -1,0 +1,37 @@
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+/**
+ * Class used to switch levels.
+ */
+public class MapListener implements KeyListener {
+	private gameComponent component;
+
+	public MapListener(gameComponent component) {
+		this.component = component;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if (key == KeyEvent.VK_U) {
+			this.component.mapPlus();
+			this.component.repaint();
+		}
+		if (key == KeyEvent.VK_D) {
+			this.component.mapMinus();
+			this.component.repaint();
+		}
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+
+	}
+
+}

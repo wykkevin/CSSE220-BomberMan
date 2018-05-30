@@ -1,0 +1,28 @@
+import java.awt.Point;
+
+/**
+ * This is an abstract class of powerups. ExtraLife, LongerRange and MoreBombs
+ * extends it.
+ */
+public abstract class Powerup {
+
+	private Point position;
+	private GameComponent gameComponent;
+
+	public Powerup(Point position, GameComponent gameComponent) {
+		this.position = position;
+		this.gameComponent = gameComponent;
+	}
+
+	public abstract void newPower(Hero hero);
+
+	public Point getPosition() {
+		return this.position;
+	}
+
+	public abstract String getName();
+
+	public GameComponent getGameComponent() {
+		return this.gameComponent;
+	}
+}

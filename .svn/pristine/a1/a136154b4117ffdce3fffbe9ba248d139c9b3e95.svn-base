@@ -1,0 +1,7 @@
+import java.awt.Point;
+
+public class Hero {
+	
+	private Point position;
+	
+}

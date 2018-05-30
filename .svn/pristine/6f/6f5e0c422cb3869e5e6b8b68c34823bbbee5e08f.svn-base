@@ -1,0 +1,40 @@
+import java.awt.Point;
+import java.util.ArrayList;
+
+/**
+ * Class for monster
+ */
+public abstract class Monster extends character {
+
+	public Monster(GameComponent component) {
+		super(component);
+		this.position = new Point(50, 50);
+		this.speed = 25;
+	}
+
+	@Override
+	public abstract String getName();
+
+	public void addToList(ArrayList<Monster> monsterList) {
+		monsterList.add(this);
+	}
+
+	public void move() {
+		double random0To4 = (int) (Math.random() * 4);
+		if (random0To4 == 0) {// up
+			Point newPosition = new Point(this.position.x, this.position.y + this.speed);
+			this.setPosition(newPosition);
+		} else if (random0To4 == 1) {// down
+			Point newPosition = new Point(this.position.x, this.position.y - this.speed);
+			this.setPosition(newPosition);
+		} else if (random0To4 == 2) {// left
+			Point newPosition = new Point(this.position.x - this.speed, this.position.y);
+			this.setPosition(newPosition);
+		} else if (random0To4 == 3) {// right
+			Point newPosition = new Point(this.position.x + this.speed, this.position.y);
+			this.setPosition(newPosition);
+		} else {
+			System.out.println("no direction");
+		}
+	}
+}

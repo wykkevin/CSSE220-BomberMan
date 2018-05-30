@@ -1,0 +1,144 @@
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.ArrayList;
+
+import javax.swing.JComponent;
+
+/**
+ * Class to draw the components.
+ */
+public class GameComponent extends JComponent {
+	private Hero hero;
+	private ArrayList<Monster> monsterList;
+	private GameMap gameMap;
+	private ArrayList<Bomb> bombList;
+	private boolean isBomb;
+	private Thread repainterThread;
+
+	public GameComponent() {
+		this.hero = new Hero(this);
+		this.monsterList = new ArrayList<Monster>();
+		this.gameMap = new GameMap();
+		this.bombList = new ArrayList<Bomb>();
+		this.isBomb = false;
+		Runnable r = new Repainter(30);
+		this.repainterThread = new Thread(r);
+		this.repainterThread.start();
+
+	}
+
+	public GameMap getMap() {
+		return this.gameMap;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		this.hero.draw(g2);
+		for (Monster monster : this.monsterList) {
+
+			monster.draw(g2);
+		}
+		this.gameMap.draw(g2);
+		if (isBomb) {
+			for (int i = 0; i < this.bombList.size(); i++) {
+				if (!this.bombList.get(i).hasBombed()) {
+					//this.bombList.get(i).countDown();
+					//this.bombList.get(i).explode();
+					this.bombList.get(i).draw(g2);
+				} else {
+					this.bombList.remove(this.bombList.get(i));
+					this.hero.setRemainBombs(this.hero.getRemainBombs()+1);
+				}
+			}
+		}
+	}
+
+	public void addCharacter(Hero heroCharacter, ArrayList<Monster> monsterCharacter) {
+		this.hero = heroCharacter;
+		this.monsterList = monsterCharacter;
+		MonsterOne m1 = new MonsterOne(this);
+		m1.addToList(this.monsterList);
+		new Thread(m1).start();
+		MonsterTwo m2 = new MonsterTwo(this);
+		m2.addToList(this.monsterList);
+		new Thread(m2).start();
+		this.repaint();
+	}
+
+	public void addBomb() {
+		Bomb bomb = new Bomb(this.gameMap, this.hero, this.monsterList, this.bombList);
+		this.bombList.add(bomb);
+		//new Thread(bomb).start();
+		isBomb = true;
+		this.repaint();
+	}
+
+	public boolean isBomb() {
+		return this.isBomb;
+	}
+
+	public void mapPlus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum < 7) {
+			mapNum++;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+		this.isBomb = false;
+		this.monsterList = new ArrayList<Monster>();
+		MonsterOne m1 = new MonsterOne(this);
+		m1.addToList(this.monsterList);
+		new Thread(m1).start();
+		MonsterTwo m2 = new MonsterTwo(this);
+		m2.addToList(this.monsterList);
+		new Thread(m2).start();
+	}
+
+	public void mapMinus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum > 1) {
+			mapNum--;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+		this.isBomb = false;
+		this.monsterList = new ArrayList<Monster>();
+		MonsterOne m1 = new MonsterOne(this);
+		m1.addToList(this.monsterList);
+		new Thread(m1).start();
+		MonsterTwo m2 = new MonsterTwo(this);
+		m2.addToList(this.monsterList);
+		new Thread(m2).start();
+	}
+
+	public void setFPS(int frames) {
+		Runnable r = new Repainter(frames);
+		Thread t = new Thread(r);
+		this.repainterThread.interrupt();
+		t.start();
+		this.repainterThread = t;
+	}
+
+	private class Repainter implements Runnable {
+		private final int fps;
+
+		public Repainter(int fps) {
+			this.fps = fps;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					Thread.sleep(1000 / this.fps);
+					GameComponent.this.repaint();
+				}
+			} catch (InterruptedException e) {
+				// nothing to do
+			}
+		}
+	}
+}

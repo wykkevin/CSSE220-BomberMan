@@ -1,0 +1,46 @@
+import java.util.ArrayList;
+
+/**
+ * Class for the hero
+ */
+public class Hero extends Creature {
+
+	private ArrayList<Powerup> powerupList;
+
+	public Hero(GameComponent component) {
+		super(component);
+		this.speed = 25;
+		this.powerupList = new ArrayList<Powerup>();
+	}
+
+	public boolean dropBomb() {
+		if (this.remainBombs > 0) {
+			this.remainBombs--;
+			System.out.println("ohhh,there is a bomb");
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "hero";
+	}
+
+	public void addPowerUp(Powerup powerup) {
+		this.powerupList.add(powerup);
+	}
+
+	public void obtainPowers() {
+		for (int i = 0; i < this.powerupList.size(); i++) {
+			if (this.powerupList.get(i).getPosition().x == this.getPosition().x
+					&& this.powerupList.get(i).getPosition().y == this.getPosition().y) {
+				this.powerupList.get(i).newPower(this);
+				System.out.println("You got the " + this.powerupList.get(i).getName() + " powerup.");
+				this.component.getMap().getGameMap()[this.powerupList.get(i).getPosition().x
+						/ 50][this.powerupList.get(i).getPosition().y / 50] = 0;
+				this.powerupList.remove(this.powerupList.get(i));
+			}
+		}
+	}
+}

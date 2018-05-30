@@ -1,0 +1,129 @@
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.ArrayList;
+
+import org.junit.Test;
+
+/**
+ * Test of bomb(partly)
+ */
+public class BombTest {
+	Graphics2D g2;
+	private ArrayList<Bomb> bombList = new ArrayList<Bomb>();
+	private ArrayList<Monster> monsterList = new ArrayList<Monster>();
+	private GameMap map = new GameMap();
+	private GameComponent component = new GameComponent();
+	private Hero hero = new Hero(component);
+	// private int range; no range
+
+	@Test
+	public void Addtest() {
+		Bomb bomb1 = null;
+		Bomb bomb2 = null;
+		Bomb bomb3 = null;
+		Bomb bomb4 = null;
+		Bomb bomb5 = null;
+		this.bombList.add(bomb1);
+		this.bombList.add(bomb2);
+		this.bombList.add(bomb3);
+		this.bombList.add(bomb4);
+		this.bombList.add(bomb5);
+		assertEquals(bomb1, this.bombList.get(0));
+		assertEquals(bomb2, this.bombList.get(1));
+		assertEquals(bomb3, this.bombList.get(2));
+		assertEquals(bomb4, this.bombList.get(3));
+		assertEquals(bomb5, this.bombList.get(4));
+
+	}
+
+	@Test
+	public void SetRangeTest() {
+		Bomb bomb1 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb1);
+		this.bombList.get(0).setRange(1);
+		assertEquals(1, this.bombList.get(0).getRange());
+		Bomb bomb2 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb2);
+		this.bombList.get(1).setRange(2);
+		assertEquals(2, this.bombList.get(1).getRange());
+		Bomb bomb3 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb3);
+		this.bombList.get(2).setRange(3);
+		assertEquals(3, this.bombList.get(2).getRange());
+		Bomb bomb4 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb4);
+		this.bombList.get(3).setRange(2);
+		assertEquals(2, this.bombList.get(3).getRange());
+
+	}
+	@Test
+	public void GetPositionTest(){
+		Bomb bomb1 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb1);
+		
+		assertEquals(new Point(0,0), this.bombList.get(0).getPosition());
+	}
+	@Test
+	public void SetPositionTest(){
+		Bomb bomb1 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb1);
+		Bomb bomb2 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb2);
+		Bomb bomb3 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb3);
+		bomb1.setPosition(new Point(50,50));
+		bomb3.setPosition(new Point(500,500));
+		assertEquals(new Point(50,50), this.bombList.get(0).getPosition());
+		assertEquals(new Point(0,0), this.bombList.get(1).getPosition());
+		assertEquals(new Point(500,500), this.bombList.get(2).getPosition());
+		
+	}
+	
+	@Test
+	public void ExplodeWallTest(){
+		Bomb bomb1 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb1);
+		bomb1.setPosition(new Point(100,100));
+		Bomb bomb2 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb2);
+		bomb2.setPosition(new Point(650,1));
+		
+		map.getGameMap()[50/50][50/50] = 2; //insert a destroyable wall besides bomb1.
+		map.getGameMap()[2][1]=2;
+		map.getGameMap()[13][2]=0;
+		map.getGameMap()[13][0]=1;
+		
+		bomb1.explode();
+		bomb2.explode();
+		
+		assertTrue(map.isWall(1,1));
+		assertTrue(map.isWall(2,1));
+		assertFalse(map.isWall(13, 0));		
+		assertFalse(map.isWall(13, 2));
+		
+	}
+	@Test
+	public void ExplodeHeroTest(){
+		Hero HeroForTest = new Hero(component);
+		HeroForTest.setPosition(new Point(50,50));
+		Bomb bomb1 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb1);
+		bomb1.setPosition(new Point(100,100));
+		Bomb bomb2 = new Bomb(map, hero, monsterList, bombList, this.component, this.component.getRange());
+		this.bombList.add(bomb2);
+		bomb2.setPosition(new Point(650,1));
+//		Monster monsterForTest = new Monster(component,hero);
+		
+		bomb1.explode();
+		assertEquals(new Point(50,50),HeroForTest.getPosition());
+	}
+	
+	
+	
+
+}

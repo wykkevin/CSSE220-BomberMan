@@ -1,0 +1,77 @@
+
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+/**
+ * Class for the map.
+ */
+public class GameMap {
+	private int mapNum;
+	private int[][] map;
+
+	public GameMap() {
+		this.mapNum = 1;
+		this.map = this.loadFile();
+	}
+
+	public GameMap(int mapNum) {
+		this.mapNum = mapNum;
+		this.map = this.loadFile();
+	}
+
+	public int getMapNum() {
+		return this.mapNum;
+	}
+
+	@SuppressWarnings("null")
+	public int[][] loadFile() {
+		Scanner inscanner = null;
+		ArrayList<String> mapLoaded = new ArrayList<>();
+		try {
+			inscanner = new Scanner(new File("src/image/Map" + this.mapNum));
+			while (inscanner.hasNextLine()) {
+				mapLoaded.add(inscanner.nextLine());
+			}
+		} catch (FileNotFoundException exception) {
+			System.out.println("file");
+		}
+		inscanner.close();
+		int[][] realMap = new int[mapLoaded.size()][mapLoaded.get(0).length()];
+		for (int i = 0; i < mapLoaded.size(); i++) {
+			for (int j = 0; j < mapLoaded.get(0).length(); j++) {
+				realMap[j][i] = Character.getNumericValue(mapLoaded.get(i).charAt(j));
+			}
+		}
+		return realMap;
+	}
+
+	public void draw(Graphics2D g2) {
+
+		for (int i = 0; i < this.map.length; i++) {
+			for (int j = 0; j < this.map[0].length; j++) {
+				Wall wall = new Wall(new Point(i * 50, j * 50), true, this.map[i][j]);
+				
+				wall.draw(g2);
+			}
+		}
+	}
+
+	public boolean isWall(int row, int col) {
+		if (this.map[row][col] != 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public int[][] getGameMap() {
+		return this.map;
+	}
+
+	public void setMap(int[][] map) {
+		this.map = map;
+	}
+}

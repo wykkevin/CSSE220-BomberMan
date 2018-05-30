@@ -1,0 +1,94 @@
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.ArrayList;
+
+import javax.swing.JComponent;
+
+/**
+ * Class to draw the components.
+ */
+public class GameComponent extends JComponent {
+	private Hero hero;
+	private ArrayList<Monster> monsterList;
+	private GameMap gameMap;
+	private ArrayList<Bomb> bombList;
+	private boolean isBomb;
+
+	public GameComponent() {
+		this.hero = new Hero(this);
+		this.monsterList = new ArrayList<Monster>();
+		this.gameMap = new GameMap();
+		this.bombList = new ArrayList<Bomb>();
+		this.isBomb = false;
+	}
+
+	public GameMap getMap() {
+		return this.gameMap;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		this.hero.draw(g2);
+		for (Monster monster : this.monsterList) {
+			monster.move();
+			monster.draw(g2);
+		}
+		this.gameMap.draw(g2);
+		if (isBomb) {
+			for (Bomb bomb : this.bombList) {
+				bomb.explode();
+				bomb.draw(g2);
+			}
+		}
+	}
+
+	public void addCharacter(Hero heroCharacter, ArrayList<Monster> monsterCharacter) {
+		this.hero = heroCharacter;
+		this.monsterList = monsterCharacter;
+		MonsterOne m1 = new MonsterOne(this);
+		m1.addToList(this.monsterList);
+		MonsterTwo m2 = new MonsterTwo(this);
+		m2.addToList(this.monsterList);
+		this.repaint();
+	}
+
+	public void addBomb() {
+		Bomb bomb = new Bomb(this.hero.getPosition(), this.gameMap, this.hero,this.monsterList);
+		this.bombList.add(bomb);
+		isBomb = true;
+		this.repaint();
+	}
+
+	public void mapPlus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum < 7) {
+			mapNum++;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+		this.isBomb = false;
+		this.monsterList=new ArrayList<Monster>();
+		MonsterOne m1 = new MonsterOne(this);
+		m1.addToList(this.monsterList);
+		MonsterTwo m2 = new MonsterTwo(this);
+		m2.addToList(this.monsterList);
+	}
+
+	public void mapMinus() {
+		int mapNum = this.gameMap.getMapNum();
+		if (mapNum > 1) {
+			mapNum--;
+			this.gameMap = new GameMap(mapNum);
+		}
+		this.hero.setPosition(new Point(0, 0));
+		this.isBomb = false;
+		this.monsterList=new ArrayList<Monster>();
+		MonsterOne m1 = new MonsterOne(this);
+		m1.addToList(this.monsterList);
+		MonsterTwo m2 = new MonsterTwo(this);
+		m2.addToList(this.monsterList);
+	}
+}

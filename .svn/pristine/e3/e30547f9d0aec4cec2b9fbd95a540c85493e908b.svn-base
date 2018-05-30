@@ -1,0 +1,14 @@
+
+public class LongerRange extends Powerup {
+
+	public LongerRange(Hero hero, Bomb bomb) {
+		super(hero);
+	}
+
+	@Override
+	public void newPower() {
+		// TODO Auto-generated method stub.
+
+	}
+
+}

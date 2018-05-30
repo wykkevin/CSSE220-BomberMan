@@ -1,0 +1,148 @@
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+/**
+ * Class for the control of the hero.
+ */
+public class MoveListener implements KeyListener {
+
+	private Hero hero;
+	private GameComponent component;
+
+	public MoveListener(Hero hero, GameComponent gameComponent) {
+		this.hero = hero;
+		this.component = gameComponent;
+	}
+
+	/*
+	 * Prevent the hero from crossing the wall.
+	 */
+	public boolean movable(int row, int col, int row2, int col2, int check0) {
+		if (this.component.getMap().isWall(row, col)) {
+			return false;
+		}
+		if (this.component.getMap().isWall(row2, col2) && check0 != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if (this.hero.getPosition().y > 0 && key == KeyEvent.VK_UP) {
+			int checkRow = this.hero.getPosition().x / 50;
+			int checkCol = this.hero.getPosition().y / 50 - 1;
+			if (checkCol < 0) {
+				checkCol = 0;
+			}
+			boolean movable;
+			if (checkRow > 12) {
+				movable = this.movable(checkRow, checkCol, checkRow, checkCol, this.hero.getPosition().x % 50);
+			} else {
+				movable = this.movable(checkRow, checkCol, checkRow + 1, checkCol, this.hero.getPosition().x % 50);
+			}
+			Point upPoint;
+			if (this.hero.getPosition().y % 50 <= 5 && !movable) {
+
+				{
+					upPoint = new Point(this.hero.getPosition().x, (checkCol + 1) * 50);
+				}
+			} else {
+
+				upPoint = new Point(this.hero.getPosition().x, this.hero.getPosition().y - 5);
+			}
+
+			this.hero.setPosition(upPoint);
+			System.out.println(this.hero.getPosition());
+		}
+
+		else if (this.hero.getPosition().y < 650 && key == KeyEvent.VK_DOWN) {
+			int checkRow = this.hero.getPosition().x / 50;
+			int checkCol = this.hero.getPosition().y / 50 + 2;
+			if (this.hero.getPosition().y % 50 == 0) {
+				checkCol--;
+			}
+			if (checkCol > 13) {
+				checkCol = 13;
+			}
+			boolean movable;
+			if (checkRow > 12) {
+				movable = this.movable(checkRow, checkCol, checkRow, checkCol, this.hero.getPosition().x % 50);
+			} else {
+				movable = this.movable(checkRow, checkCol, checkRow + 1, checkCol, this.hero.getPosition().x % 50);
+			}
+			Point downPoint;
+			if (((checkCol - 1) * 50 - this.hero.getPosition().y) <= 5 && !movable) {
+				downPoint = new Point(this.hero.getPosition().x, (checkCol - 1) * 50);
+			} else {
+				downPoint = new Point(this.hero.getPosition().x, this.hero.getPosition().y + 5);
+			}
+			this.hero.setPosition(downPoint);
+			System.out.println(this.hero.getPosition());
+		}
+
+		else if (this.hero.getPosition().x > 0 && key == KeyEvent.VK_LEFT) {
+			int checkRow = this.hero.getPosition().x / 50 - 1;
+			int checkCol = this.hero.getPosition().y / 50;
+			if (checkRow < 0) {
+				checkRow = 0;
+			}
+			boolean movable;
+			if (checkCol > 12) {
+				movable = this.movable(checkRow, checkCol, checkRow, checkCol, this.hero.getPosition().y % 50);
+			} else {
+				movable = this.movable(checkRow, checkCol, checkRow, checkCol + 1, this.hero.getPosition().y % 50);
+			}
+			Point leftPoint;
+			if (this.hero.getPosition().x % 50 <= 5 && !movable) {
+
+				{
+					leftPoint = new Point((checkRow + 1) * 50, this.hero.getPosition().y);
+				}
+			} else {
+				leftPoint = new Point(this.hero.getPosition().x - 5, this.hero.getPosition().y);
+			}
+			this.hero.setPosition(leftPoint);
+			System.out.println(this.hero.getPosition());
+		}
+
+		else if (this.hero.getPosition().x < 650 && key == KeyEvent.VK_RIGHT) {
+			int checkRow = this.hero.getPosition().x / 50 + 2;
+			int checkCol = this.hero.getPosition().y / 50;
+			if (this.hero.getPosition().x % 50 == 0) {
+				checkRow--;
+			}
+			if (checkRow > 13) {
+				checkRow = 13;
+			}
+			boolean movable;
+			if (checkCol > 12) {
+				movable = this.movable(checkRow, checkCol, checkRow, checkCol, this.hero.getPosition().y % 50);
+			} else {
+				movable = this.movable(checkRow, checkCol, checkRow, checkCol + 1, this.hero.getPosition().y % 50);
+			}
+			Point rightPoint;
+			if (((checkRow - 1) * 50 - this.hero.getPosition().x) <= 5 && !movable) {
+				rightPoint = new Point((checkRow - 1) * 50, this.hero.getPosition().y);
+			} else {
+				rightPoint = new Point(this.hero.getPosition().x + 5, this.hero.getPosition().y);
+			}
+			this.hero.setPosition(rightPoint);
+			System.out.println(this.hero.getPosition());
+		}
+		this.component.repaint();
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// No move
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// No move
+	}
+
+}

@@ -1,0 +1,7 @@
+We first add an animation of exploding of the bomb.
+Then we make one "boss monster", which can test if the hero is around him. If he notices that
+the hero is nearby, he will "flash" to escape.
+Furthermore, we add one additional Power-up, which is the timebomb. 
+The player can control if the bomb should explode by press "E" on the keyboard.
+Then we add start and end frames, which guide the player.
+At last, we add save and continue button which enables the player to store and read what he has played.

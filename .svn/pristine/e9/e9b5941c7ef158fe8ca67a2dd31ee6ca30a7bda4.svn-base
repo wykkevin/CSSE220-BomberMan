@@ -1,0 +1,19 @@
+import java.awt.Point;
+
+public class LongerRange extends Powerup {
+
+	public LongerRange(Point position, Bomb bomb) {
+		super(position, bomb);
+	}
+
+	@Override
+	public void newPower(Hero hero) {
+		this.getBomb().setRange(this.getBomb().getRange() + 1);
+
+	}
+	
+	@Override
+	public String getName() {
+		return ("Longer Range");
+	}
+}

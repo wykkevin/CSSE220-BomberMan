@@ -1,0 +1,19 @@
+import java.awt.Point;
+
+public class SpeedUp extends Powerup {
+
+	public SpeedUp(Point position) {
+		super(position);
+	}
+
+	@Override
+	public void newPower(Hero hero) {
+		hero.setSpeed(hero.getSpeed() + 25);
+	}
+
+	@Override
+	public String getName() {
+		return ("Speed up");
+	}
+
+}

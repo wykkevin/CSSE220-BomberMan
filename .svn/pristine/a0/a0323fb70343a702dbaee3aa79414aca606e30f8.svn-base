@@ -1,0 +1,28 @@
+import java.awt.Point;
+
+public abstract class Powerup {
+	
+	private Point position;
+	private Bomb bomb;
+	
+	public Powerup(Point position) {
+		this.position = position;
+	}
+	
+	public Powerup(Point position, Bomb bomb) {
+		this.position = position;
+		this.bomb = bomb;
+	}
+	
+	public abstract void newPower(Hero hero);
+	
+	public Bomb getBomb() {
+		return this.bomb;
+	}
+	
+	public Point getPosition() {
+		return this.position;
+	}
+	
+	public abstract String getName();
+}

@@ -1,0 +1,18 @@
+import java.awt.Point;
+
+public class MoreBombs extends Powerup {
+
+	public MoreBombs(Point position) {
+		super(position);
+	}
+
+	@Override
+	public void newPower(Hero hero) {
+		hero.setRemainBombs(hero.getRemainBombs() + 1);
+	}
+	
+	@Override
+	public String getName() {
+		return ("More Bombs");
+	}
+}

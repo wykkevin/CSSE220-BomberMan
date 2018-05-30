@@ -1,0 +1,45 @@
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+
+/**
+ * Class to control the bomb.
+ */
+public class BombListener implements KeyListener {
+
+	private Hero hero;
+	private GameComponent component;
+	private GameMap map;
+	private ArrayList<Monster> monsterList = new ArrayList<Monster>();
+
+	public BombListener(Hero hero, GameComponent gameComponent, GameMap map, ArrayList<Monster> monsterList) {
+		this.hero = hero;
+		this.component = gameComponent;
+		this.map = map;
+		this.monsterList = monsterList;
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if (key == KeyEvent.VK_SPACE) {
+			this.hero.dropBomb();
+			Bomb bomb = new Bomb(this.map, this.hero, this.monsterList);
+			this.component.addBomb();
+			bomb.explode();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// No move.
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// No move.
+
+	}
+
+}
